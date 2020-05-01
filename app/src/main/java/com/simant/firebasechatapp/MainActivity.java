@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.Gravity;
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
                                             .getCurrentUser()
                                             .getDisplayName())
                             );
+                    // sent message sound
+                    MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.sent_message_audio);
+                    mediaPlayer.start();
                     input.setText("");
                 }
             }
