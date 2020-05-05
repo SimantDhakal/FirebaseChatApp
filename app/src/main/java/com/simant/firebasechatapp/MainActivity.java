@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,12 +27,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public static int SIGN_IN_REQUEST_CODE = 10;
     private DatabaseReference databaseReference;
     private FirebaseListAdapter<ChatMessage> adapter;
+    public String UID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +60,6 @@ public class MainActivity extends AppCompatActivity {
                     SIGN_IN_REQUEST_CODE
             );
         } else {
-//            Toast.makeText(this,
-//                    "Welcome " + FirebaseAuth.getInstance()
-//                            .getCurrentUser()
-//                            .getDisplayName(),
-//                    Toast.LENGTH_LONG)
-//                    .show();
-            // Load chat room contents
             displayChatMessages();
         }
 
@@ -76,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     FirebaseDatabase.getInstance()
                             .getReference()
+                            .child("users")
                             .push()
                             .setValue(new ChatMessage(input.getText().toString(),
                                     FirebaseAuth.getInstance()
@@ -89,11 +87,38 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // get UID
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            UID = user.getUid();
+        } else {
+        }
+
+        // offline status
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    // add UID to the online_response
+                    AvailableModalClass availableModalClass = new AvailableModalClass(UID);
+                    databaseReference = FirebaseDatabase.getInstance().getReference();
+                    databaseReference.child("online_status").child("UID").setValue(UID);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), "Listener Stop", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void displayChatMessages() {
         // load message
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
         FirebaseListOptions<ChatMessage> options = new FirebaseListOptions.Builder<ChatMessage>()
                 .setQuery(databaseReference, ChatMessage.class)
                 .setLayout(R.layout.message)
@@ -196,32 +221,28 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         try {
             adapter.startListening();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        try{
+        try {
             adapter.stopListening();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     // method for margin
-    private void setMargins (View view, int left, int top, int right, int bottom) {
+    private void setMargins(View view, int left, int top, int right, int bottom) {
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             p.setMargins(left, top, right, bottom);
             view.requestLayout();
         }
     }
-
-    // push notification
 
 }

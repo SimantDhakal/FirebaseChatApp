@@ -1,57 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".MainActivity">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#d3d3d3"
-        android:layout_above="@id/fab"
-        android:layout_marginBottom="10dp"/>
+    <!--    <View-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="1dp"-->
+    <!--        android:layout_above="@id/fab"-->
+    <!--        android:layout_marginBottom="10dp"-->
+    <!--        android:background="#d3d3d3" />-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:backgroundTint="#333"
-        android:src="@drawable/ic_send_black_24dp"
-        android:id="@+id/fab"
-        android:layout_marginBottom="10dp"
-        android:tint="@android:color/white"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="10dp"
-        app:fabSize="mini" />
+    <!--    <ImageView-->
+    <!--        android:id="@+id/load_image"-->
+    <!--        android:paddingTop="4dp"-->
+    <!--        android:paddingBottom="4dp"-->
+    <!--        android:paddingRight="4dp"-->
+    <!--        android:src="@drawable/ic_image_black_24dp"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_toLeftOf="@id/input"-->
+    <!--        android:layout_width="40dp"-->
+    <!--        android:layout_height="40dp" />-->
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Type a message"
-            android:textSize="14dp"
-            android:id="@+id/input"
-            android:padding="12dp"
-            android:maxLines="2"
-            android:minLines="1"
-            android:layout_marginBottom="10dp"
-            android:layout_toLeftOf="@id/fab"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:background="@color/fui_transparent"/>
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/fab"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentEnd="true"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_marginRight="10dp"-->
+    <!--        android:layout_marginBottom="10dp"-->
+    <!--        android:clickable="true"-->
+    <!--        android:src="@drawable/ic_send_black_24dp"-->
+    <!--        android:tint="@android:color/white"-->
+    <!--        app:backgroundTint="#333"-->
+    <!--        app:fabSize="mini" />-->
+
+
+    <!--    <EditText-->
+    <!--        android:id="@+id/input"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentStart="true"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_marginBottom="10dp"-->
+    <!--        android:layout_toRightOf="@id/fab"-->
+    <!--        android:background="@color/fui_transparent"-->
+    <!--        android:hint="Type a message"-->
+    <!--        android:maxLines="2"-->
+    <!--        android:minLines="1"-->
+    <!--        android:padding="12dp"-->
+    <!--        android:textSize="14dp" />-->
+
+    <!--    <ListView-->
+    <!--        android:id="@+id/list_of_messages"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:layout_above="@id/fab"-->
+    <!--        android:layout_alignParentStart="true"-->
+    <!--        android:layout_alignParentTop="true"-->
+    <!--        android:layout_marginBottom="7dp"-->
+    <!--        android:divider="@android:color/transparent"-->
+    <!--        android:dividerHeight="7dp" />-->
+
 
     <ListView
+        android:id="@+id/list_of_messages"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@id/fab"
-        android:dividerHeight="7dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_above="@id/linearLayout"
         android:divider="@android:color/transparent"
-        android:id="@+id/list_of_messages"
-        android:layout_marginBottom="7dp"/>
+        android:stackFromBottom="true"
+        android:dividerHeight="7dp" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:background="#fff"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@id/fab"
+            android:layout_marginBottom="5dp"
+            android:background="#d3d3d3" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/load_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="4dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/select_image" />
+
+            <EditText
+                android:id="@+id/input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/fui_transparent"
+                android:hint="Type a message"
+                android:maxLines="2"
+                android:minLines="1"
+                android:padding="12dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:textSize="14dp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:clickable="true"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_send_black_24dp"
+                android:tint="@android:color/white"
+                app:backgroundTint="#333"
+                app:fabSize="mini" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 </RelativeLayout>
