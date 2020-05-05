@@ -8,72 +8,12 @@
     android:background="#fff"
     tools:context=".MainActivity">
 
-    <!--    <View-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="1dp"-->
-    <!--        android:layout_above="@id/fab"-->
-    <!--        android:layout_marginBottom="10dp"-->
-    <!--        android:background="#d3d3d3" />-->
-
-    <!--    <ImageView-->
-    <!--        android:id="@+id/load_image"-->
-    <!--        android:paddingTop="4dp"-->
-    <!--        android:paddingBottom="4dp"-->
-    <!--        android:paddingRight="4dp"-->
-    <!--        android:src="@drawable/ic_image_black_24dp"-->
-    <!--        android:layout_alignParentBottom="true"-->
-    <!--        android:layout_toLeftOf="@id/input"-->
-    <!--        android:layout_width="40dp"-->
-    <!--        android:layout_height="40dp" />-->
-
-    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-    <!--        android:id="@+id/fab"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_alignParentEnd="true"-->
-    <!--        android:layout_alignParentBottom="true"-->
-    <!--        android:layout_marginRight="10dp"-->
-    <!--        android:layout_marginBottom="10dp"-->
-    <!--        android:clickable="true"-->
-    <!--        android:src="@drawable/ic_send_black_24dp"-->
-    <!--        android:tint="@android:color/white"-->
-    <!--        app:backgroundTint="#333"-->
-    <!--        app:fabSize="mini" />-->
-
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/input"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_alignParentStart="true"-->
-    <!--        android:layout_alignParentBottom="true"-->
-    <!--        android:layout_marginBottom="10dp"-->
-    <!--        android:layout_toRightOf="@id/fab"-->
-    <!--        android:background="@color/fui_transparent"-->
-    <!--        android:hint="Type a message"-->
-    <!--        android:maxLines="2"-->
-    <!--        android:minLines="1"-->
-    <!--        android:padding="12dp"-->
-    <!--        android:textSize="14dp" />-->
-
-    <!--    <ListView-->
-    <!--        android:id="@+id/list_of_messages"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:layout_above="@id/fab"-->
-    <!--        android:layout_alignParentStart="true"-->
-    <!--        android:layout_alignParentTop="true"-->
-    <!--        android:layout_marginBottom="7dp"-->
-    <!--        android:divider="@android:color/transparent"-->
-    <!--        android:dividerHeight="7dp" />-->
-
-
     <ListView
         android:id="@+id/list_of_messages"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="50dp"
         android:layout_above="@id/linearLayout"
         android:divider="@android:color/transparent"
         android:stackFromBottom="true"
