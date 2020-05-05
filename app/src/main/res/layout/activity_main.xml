@@ -17,7 +17,7 @@
         android:layout_above="@id/linearLayout"
         android:divider="@android:color/transparent"
         android:stackFromBottom="true"
-        android:dividerHeight="7dp" />
+        android:dividerHeight="7dp"/>
 
 
     <LinearLayout
@@ -38,8 +38,7 @@
             android:layout_marginBottom="5dp"
             android:background="#d3d3d3" />
 
-
-        <LinearLayout
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -77,6 +76,53 @@
                 android:tint="@android:color/white"
                 app:backgroundTint="#333"
                 app:fabSize="mini" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- image layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:id="@+id/layout_upload_image"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgView"
+            android:layout_width="300dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="40dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/layout_button"
+                android:orientation="horizontal"
+                android:layout_alignParentTop="true"
+                android:weightSum="2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnChoose"
+                    android:text="Choose"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnUpload"
+                    android:text="Upload"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
         </LinearLayout>
 
