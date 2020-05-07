@@ -2,41 +2,49 @@ package com.simant.firebasechatapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,12 +54,69 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseListAdapter<ChatMessage> adapter;
     public String UID = "";
 
+    // declare string image
+    String image_url = "";
+    String message_text = "";
+
+    private ImageView img_pick_image;
+    LinearLayout message_layout, upload_image_layout;
+
+    // image initialization
+    private Button btnChoose, btnUpload;
+    private ImageView imageView;
+    private Uri filePath, uri;
+    private final int PICK_IMAGE_REQUEST = 71;
+
+    //Firebase
+    FirebaseStorage storage;
+    StorageReference storageReference;
+
+    ShowProgress progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        progress = new ShowProgress(MainActivity.this);
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
+        //Initialize Views
+        btnChoose = (Button) findViewById(R.id.btnChoose);
+        btnUpload = (Button) findViewById(R.id.btnUpload);
+        imageView = (ImageView) findViewById(R.id.imgView);
+
+        btnChoose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseImage();
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImage();
+            }
+        });
+
         mListView = findViewById(R.id.list_of_messages);
+        message_layout = findViewById(R.id.linearLayout);
+        upload_image_layout = findViewById(R.id.layout_upload_image);
+        upload_image_layout.setVisibility(View.GONE);
+
+        img_pick_image = findViewById(R.id.load_image);
+        img_pick_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.setVisibility(View.GONE);
+                message_layout.setVisibility(View.GONE);
+                upload_image_layout.setVisibility(View.VISIBLE);
+            }
+        });
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivityForResult(
                     AuthUI.getInstance()
@@ -70,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 EditText input = findViewById(R.id.input);
                 String message = input.getText().toString();
                 if (message.equals("")) {
+
                 } else {
                     FirebaseDatabase.getInstance()
                             .getReference()
@@ -78,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                             .setValue(new ChatMessage(input.getText().toString(),
                                     FirebaseAuth.getInstance()
                                             .getCurrentUser()
-                                            .getDisplayName())
+                                            .getDisplayName(), image_url.toString())
                             );
                     // sent message sound
                     MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.sent_message_audio);
@@ -114,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Listener Stop", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void displayChatMessages() {
@@ -127,41 +194,50 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView messageText, messageUser, messageTime;
+                ImageView chat_image;
+
                 messageText = v.findViewById(R.id.message_text);
                 messageUser = v.findViewById(R.id.message_user);
                 messageTime = v.findViewById(R.id.message_time);
+                chat_image = v.findViewById(R.id.chat_image);
 
-                messageText.setText(model.getMessageText());
-                messageUser.setText(model.getMessageUser());
-                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
+                if (model.getMessageText().toString().equals("")) {
+                    messageUser.setText(model.getMessageUser());
+                    messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
+                    Picasso.with(getApplicationContext()).load(model.getImage())
+                        .placeholder(R.drawable.ic_launcher_background)
+                        .resize(250, 200)
+                        .centerInside()
+                        .into(chat_image);
+                    messageText.setVisibility(View.GONE);
+                } else {
+                    messageText.setText(model.getMessageText());
+                    messageUser.setText(model.getMessageUser());
+                    messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
+//                    chat_image.setVisibility(View.GONE);
+                }
 
                 if (FirebaseAuth.getInstance().getCurrentUser().getDisplayName().equals(messageUser.getText())) {
                     messageUser.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
 
-                    // set Gravity of message
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.MATCH_PARENT);
                     params.weight = 1.0f;
                     params.gravity = Gravity.LEFT;
                     messageText.setLayoutParams(params);
-
-                    // setMargin
                     setMargins(messageText, 0, 0, 90, 0);
                 } else {
                     messageText.setBackgroundResource(R.drawable.list_message_other_user);
                     messageUser.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
 
-                    // set Gravity of message
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.MATCH_PARENT);
                     params.weight = 1.0f;
                     params.gravity = Gravity.RIGHT;
                     messageText.setLayoutParams(params);
 
-                    // setMargin
                     setMargins(messageText, 90, 0, 0, 0);
                 }
-
             }
         };
         mListView.setAdapter(adapter);
@@ -183,9 +259,19 @@ public class MainActivity extends AppCompatActivity {
                         "We couldn't sign you in. Please try again later.",
                         Toast.LENGTH_LONG)
                         .show();
-
-                // Close the app
                 finish();
+            }
+        }
+
+        // image
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -222,7 +308,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             adapter.startListening();
         } catch (Exception e) {
-
         }
     }
 
@@ -245,4 +330,63 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // upload image
+    private void chooseImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void uploadImage() {
+        if (filePath != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Uploading...");
+            progressDialog.show();
+
+            final StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    FirebaseDatabase.getInstance().getReference()
+                                            .child("users")
+                                            .push()
+                                            .setValue(new ChatMessage(message_text.toString(), FirebaseAuth.getInstance()
+                                                    .getCurrentUser().getDisplayName(), uri.toString()));
+
+                                    progressDialog.dismiss();
+
+                                    //set visibility
+                                    mListView.setVisibility(View.VISIBLE);
+                                    message_layout.setVisibility(View.VISIBLE);
+                                    upload_image_layout.setVisibility(View.GONE);
+
+                                    filePath = null;
+                                }
+                            });
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(MainActivity.this, "Failed " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded " + (int) progress + "%");
+                        }
+                    });
+        }
+    }
 }
