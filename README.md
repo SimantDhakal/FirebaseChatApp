@@ -10,3 +10,4 @@ I will cover several features which includes:
 5. Camera - Photo filter
 6. Edit pictures
 7. Settings
+
